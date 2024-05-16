@@ -102,11 +102,10 @@ def sendMicMessage(message):
                     translation = f" ({translation})"
                 model.logger.info(f"[SENT] {message}{translation}")
 
-            # if config.ENABLE_OVERLAY_SMALL_LOG is True:
-            #     overlay_image = model.createOverlayImageShort(message, translation)
-            #     model.updateOverlay(overlay_image)
-            #     overlay_image = model.createOverlayImageLong("send", message, translation)
-            #     model.updateOverlay(overlay_image)
+            if config.ENABLE_OVERLAY_LARGE_LOG is True:
+                if model.overlay.initialized is True:
+                    overlay_image = model.createOverlayImageLong("send", message, translation)
+                    model.updateOverlay(overlay_image)
 
 def startTranscriptionSendMessage():
     model.startMicTranscript(sendMicMessage, view.printToTextbox_TranscriptionSendNoDeviceError)
@@ -166,8 +165,11 @@ def receiveSpeakerMessage(message):
                 if model.overlay.initialized is True:
                     overlay_image = model.createOverlayImageShort(message, translation)
                     model.updateOverlay(overlay_image)
-                # overlay_image = model.createOverlayImageLong("receive", message, translation)
-                # model.updateOverlay(overlay_image)
+
+            if config.ENABLE_OVERLAY_LARGE_LOG is True:
+                if model.overlay.initialized is True:
+                    overlay_image = model.createOverlayImageLong("receive", message, translation)
+                    model.updateOverlay(overlay_image)
 
             # ------------Speaker2Chatbox------------
             if config.ENABLE_SPEAKER2CHATBOX is True:
@@ -244,11 +246,10 @@ def sendChatMessage(message):
                 osc_message = messageFormatter("SEND", translation, message)
             model.oscSendMessage(osc_message)
 
-        # if config.ENABLE_OVERLAY_SMALL_LOG is True:
-        #     overlay_image = model.createOverlayImageShort(message, translation)
-        #     model.updateOverlay(overlay_image)
-        #     overlay_image = model.createOverlayImageLong("send", message, translation)
-        #     model.updateOverlay(overlay_image)
+        if config.ENABLE_OVERLAY_LARGE_LOG is True:
+            if model.overlay.initialized is True:
+                overlay_image = model.createOverlayImageLong("send", message, translation)
+                model.updateOverlay(overlay_image)
 
         # update textbox message log (Sent)
         view.printToTextbox_SentMessage(message, translation)
@@ -262,6 +263,10 @@ def sendChatMessage(message):
             view.clearMessageBox()
 
 def messageBoxPressKeyEnter():
+    if config.ENABLE_OVERLAY_LARGE_LOG is True:
+        if model.overlay.initialized is False and model.overlay.checkSteamvrRunning() is True:
+            model.startOverlay()
+
     model.oscStopSendTyping()
     message = view.getTextFromMessageBox()
     sendChatMessage(message)
@@ -416,6 +421,12 @@ def callbackToggleTranscriptionSend(is_turned_on):
         stopThreadingTranscriptionSendMessage()
         view.changeTranscriptionDisplayStatus("MIC_OFF")
 
+    if config.ENABLE_TRANSCRIPTION_SEND is True and (config.ENABLE_OVERLAY_SMALL_LOG is True or config.ENABLE_OVERLAY_LARGE_LOG is True):
+        if model.overlay.initialized is False and model.overlay.checkSteamvrRunning() is True:
+            model.startOverlay()
+    elif config.ENABLE_TRANSCRIPTION_SEND is False:
+        pass
+
 def callbackToggleTranscriptionReceive(is_turned_on):
     view.setMainWindowAllWidgetsStatusToDisabled()
     config.ENABLE_TRANSCRIPTION_RECEIVE = is_turned_on
@@ -426,7 +437,7 @@ def callbackToggleTranscriptionReceive(is_turned_on):
         stopThreadingTranscriptionReceiveMessage()
         view.changeTranscriptionDisplayStatus("SPEAKER_OFF")
 
-    if config.ENABLE_TRANSCRIPTION_RECEIVE is True and config.ENABLE_OVERLAY_SMALL_LOG is True:
+    if config.ENABLE_TRANSCRIPTION_RECEIVE is True and (config.ENABLE_OVERLAY_SMALL_LOG is True or config.ENABLE_OVERLAY_LARGE_LOG is True):
         if model.overlay.initialized is False and model.overlay.checkSteamvrRunning() is True:
             model.startOverlay()
     elif config.ENABLE_TRANSCRIPTION_RECEIVE is False:

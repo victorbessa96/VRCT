@@ -94,7 +94,6 @@ class Model:
             config.OVERLAY_SETTINGS["ui_scaling"],
         )
         self.overlay_image = OverlayImage()
-        self.pre_overlay_message = None
         self.th_overlay = None
         self.mic_audio_queue = None
         self.mic_mute_status = None
@@ -661,19 +660,12 @@ class Model:
         your_language = config.TARGET_LANGUAGE
         target_language = config.SOURCE_LANGUAGE
         ui_type = config.OVERLAY_UI_TYPE
-        self.pre_overlay_message = {
-            "message" : message,
-            "your_language" : your_language,
-            "translation" : translation,
-            "target_language" : target_language,
-            "ui_type" : ui_type,
-        }
         return self.overlay_image.createOverlayImageShort(message, your_language, translation, target_language, ui_type)
 
-    # def createOverlayImageLong(self, message_type, message, translation):
-    #     your_language = config.TARGET_LANGUAGE if message_type == "receive" else config.SOURCE_LANGUAGE
-    #     target_language = config.SOURCE_LANGUAGE if message_type == "receive" else config.TARGET_LANGUAGE
-    #     return self.overlay_image.create_overlay_image_long(message_type, message, your_language, translation, target_language)
+    def createOverlayImageLong(self, message_type, message, translation):
+        your_language = config.TARGET_LANGUAGE if message_type == "receive" else config.SOURCE_LANGUAGE
+        target_language = config.SOURCE_LANGUAGE if message_type == "receive" else config.TARGET_LANGUAGE
+        return self.overlay_image.createOverlayImageLong(message_type, message, your_language, translation, target_language)
 
     def clearOverlayImage(self):
         self.overlay.clearImage()

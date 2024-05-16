@@ -779,6 +779,17 @@ class Config:
             saveJson(self.PATH_CONFIG, inspect.currentframe().f_code.co_name, self.OVERLAY_SMALL_LOG_SETTINGS)
 
     @property
+    @json_serializable('ENABLE_OVERLAY_LARGE_LOG')
+    def ENABLE_OVERLAY_LARGE_LOG(self):
+        return self._ENABLE_OVERLAY_LARGE_LOG
+
+    @ENABLE_OVERLAY_LARGE_LOG.setter
+    def ENABLE_OVERLAY_LARGE_LOG(self, value):
+        if isinstance(value, bool):
+            self._ENABLE_OVERLAY_LARGE_LOG = value
+            saveJson(self.PATH_CONFIG, inspect.currentframe().f_code.co_name, value)
+
+    @property
     @json_serializable('OVERLAY_UI_TYPE')
     def OVERLAY_UI_TYPE(self):
         return self._OVERLAY_UI_TYPE
@@ -1080,6 +1091,7 @@ class Config:
             "display_duration": 5,
             "fadeout_duration": 2,
         }
+        self._ENABLE_OVERLAY_LARGE_LOG = False
         self._OVERLAY_UI_TYPE = "default"
         self._ENABLE_SEND_MESSAGE_TO_VRC = True
         self._ENABLE_SEND_RECEIVED_MESSAGE_TO_VRC = False # Speaker2Chatbox

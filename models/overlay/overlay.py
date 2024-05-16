@@ -162,26 +162,26 @@ class Overlay:
         self.settings["y_rotation"] = y_rotation
         self.settings["z_rotation"] = z_rotation
 
-        match tracker:
-            case "HMD":
-                base_matrix = getHMDBaseMatrix()
-                trackerIndex = openvr.k_unTrackedDeviceIndex_Hmd
-            case "LeftHand":
-                base_matrix = getLeftHandBaseMatrix()
-                trackerIndex = self.overlay_system.getTrackedDeviceIndexForControllerRole(openvr.TrackedControllerRole_LeftHand)
-            case "RightHand":
-                base_matrix = getRightHandBaseMatrix()
-                trackerIndex = self.overlay_system.getTrackedDeviceIndexForControllerRole(openvr.TrackedControllerRole_RightHand)
-            case _:
-                base_matrix = getHMDBaseMatrix()
-                trackerIndex = openvr.k_unTrackedDeviceIndex_Hmd
-
-        translation = (self.settings["x_pos"], self.settings["y_pos"], - self.settings["z_pos"])
-        rotation = (self.settings["x_rotation"], self.settings["y_rotation"], self.settings["z_rotation"])
-        transform = utils.transform_matrix(base_matrix, translation, rotation)
-        self.transform = mat34Id(transform)
-
         if self.initialized is True:
+            match tracker:
+                case "HMD":
+                    base_matrix = getHMDBaseMatrix()
+                    trackerIndex = openvr.k_unTrackedDeviceIndex_Hmd
+                case "LeftHand":
+                    base_matrix = getLeftHandBaseMatrix()
+                    trackerIndex = self.overlay_system.getTrackedDeviceIndexForControllerRole(openvr.TrackedControllerRole_LeftHand)
+                case "RightHand":
+                    base_matrix = getRightHandBaseMatrix()
+                    trackerIndex = self.overlay_system.getTrackedDeviceIndexForControllerRole(openvr.TrackedControllerRole_RightHand)
+                case _:
+                    base_matrix = getHMDBaseMatrix()
+                    trackerIndex = openvr.k_unTrackedDeviceIndex_Hmd
+
+            translation = (self.settings["x_pos"], self.settings["y_pos"], - self.settings["z_pos"])
+            rotation = (self.settings["x_rotation"], self.settings["y_rotation"], self.settings["z_rotation"])
+            transform = utils.transform_matrix(base_matrix, translation, rotation)
+            self.transform = mat34Id(transform)
+
             self.overlay.setOverlayTransformTrackedDeviceRelative(
                 self.handle,
                 trackerIndex,
