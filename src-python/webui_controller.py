@@ -333,12 +333,19 @@ class Controller:
                 pass
             else:
                 if config.USE_EXCLUDE_WORDS is True:
-                    replacement_message, replacement_dict = self.replaceExclamationsWithRandom(message)
+                    replacement_message, replacement_dict = self.replaceExclamations(
+                        message,
+                        engine=config.SELECTED_TRANSLATION_ENGINES[config.SELECTED_TAB_NO]
+                    )
                     translation, success = model.getInputTranslate(replacement_message)
 
                     message = self.removeExclamations(message)
                     for i in range(len(translation)):
-                        translation[i] = self.restoreText(translation[i], replacement_dict)
+                        translation[i] = self.restoreText(
+                            translation[i],
+                            replacement_dict,
+                            engine=config.SELECTED_TRANSLATION_ENGINES[config.SELECTED_TAB_NO]
+                        )
                 else:
                     translation, success = model.getInputTranslate(message)
 
@@ -1469,22 +1476,24 @@ class Controller:
         th_stopTranscriptionReceiveMessage.join()
 
     @staticmethod
-    def replaceExclamationsWithRandom(text):
+    def replaceExclamations(text, engine="CTranslate2"):
         # ![...] にマッチする正規表現
         pattern = r'!\[(.*?)\]'
 
         # 乱数と置換部分を保存する辞書
         replacement_dict = {}
 
-        num = 4096
-        # マッチした部分を4096から始まる整数に置換する。置換毎に4097, 4098, ... と増える
+        num = 0
         def replace(match):
             original = match.group(1)
             nonlocal num
-            rand_value = hex(num)
-            replacement_dict[rand_value] = original
+            key_value = f"PROTECT_WORD{num}"
+            replacement_dict[key_value] = original
             num += 1
-            return f" ${rand_value} "
+            if engine == "CTranslate2" or engine == "Papago":
+                return f"__{key_value}__"
+            else:
+                return f"[{{{key_value}}}]"
 
         # 文章内の ![] の部分を置換
         replaced_text = re.sub(pattern, replace, text)
@@ -1492,11 +1501,14 @@ class Controller:
         return replaced_text, replacement_dict
 
     @staticmethod
-    def restoreText(escaped_text, escape_dict):
+    def restoreText(escaped_text, escape_dict, engine="CTranslate2"):
         # 大文字小文字を無視して置換するために、正規表現を使う
         for escape_seq, char in escape_dict.items():
             # escaped_text の部分を pattern で置換
-            pattern = re.escape(f"${escape_seq}") + r"|\$\s+" + re.escape(escape_seq)
+            if engine == "CTranslate2" or engine == "Papago":
+                pattern = rf"[\_\{{]*{re.escape(escape_seq)}[\_\}}]*"
+            else:
+                pattern = rf"[\[\{{]*{re.escape(escape_seq)}[\]\}}]*"
             escaped_text = re.sub(pattern, char, escaped_text, flags=re.IGNORECASE)
         return escaped_text
 
