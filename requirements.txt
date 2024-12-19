@@ -12,8 +12,8 @@ numpy==1.26.4
 torch==2.2.2
 transformers==4.37.2
 sentencepiece==0.2.0
-ctranslate2==4.1.0
-faster-whisper==1.0.3
+ctranslate2==4.5.0
+faster-whisper==1.1.0
 openvr==1.26.701
 pydub==0.25.1
 psutil==5.9.8
