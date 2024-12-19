@@ -17,6 +17,16 @@ ctranslate2_weights = {
             "shared_vocabulary.txt": "bd440aa21b8ca3453fc792a0018a1f3fe68b3464aadddd4d16a4b72f73c86d8c",
         }
     },
+    "Medium": { # NLLB-200 600M-parameter model
+        "url": "https://github.com/misyaguziya/VRCT-weights/releases/download/v1.0/m2m100_418m.zip",
+        "directory_name": "nllb-200-distilled-600M",
+        "tokenizer": "facebook/nllb-200-distilled-600M",
+        "hash": {
+            "model.bin": "e7c26a9abb5260abd0268fbe3040714070dec254a990b4d7fd3f74c5230e3acb",
+            "sentencepiece.model": "d8f7c76ed2a5e0822be39f0a4f95a55eb19c78f4593ce609e2edbc2aea4d380a",
+            "shared_vocabulary.txt": "bd440aa21b8ca3453fc792a0018a1f3fe68b3464aadddd4d16a4b72f73c86d8c",
+        }
+    },
     "Large": { # M2M-100 1.2B-parameter model
         "url": "https://github.com/misyaguziya/VRCT-weights/releases/download/v1.0/m2m100_12b.zip",
         "directory_name": "m2m100_12b",
